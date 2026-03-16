@@ -4,5 +4,5 @@
 
 
 # all cache pycache files in every directory 
-**/__pycache__/
+**/__pycache__/** 
 **/*.pyc
