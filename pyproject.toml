@@ -10,4 +10,6 @@ dependencies = [
     "numpy>=2.4.3",
     "pydantic>=2.12.5",
     "pytest>=9.0.2",
+    "uvicorn>=0.42.0",
 ]
+
