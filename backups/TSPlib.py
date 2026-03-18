@@ -256,130 +256,127 @@ class TSP:
 
     # ===============================================================================================================================
 
-    def __twoOpt(self, permutation: Optional[np.ndarray]) -> np.ndarray: 
-        try:
-            # 1. SETUP: Use class's permutation or a provided one
-            if permutation is None:
-                if self.__permutation is None:
-                    raise ValueError("Permutation is not initialized.")
-                current_route = np.copy(self.__permutation)
-            else:
-                current_route = np.copy(permutation)
+    # def __twoOpt(self, permutation: Optional[np.ndarray]) -> tuple[np.ndarray, int]: 
+    #     try:
+    #         # 1. SETUP: Use class's permutation or a provided one
+    #         if permutation is None:
+    #             if self.__permutation is None:
+    #                 raise ValueError("Permutation is not initialized.")
+    #             current_route = np.copy(self.__permutation)
+    #         else:
+    #             current_route = np.copy(permutation)
             
-            n = self.__size
-            if n is None or self.__distances is None:
-                raise ValueError("Size or distances are not initialized.")
-            # 2. CACHE INITIAL LENGTH: Calculate the full tour length only once at the start.
-            current_tour_length = self._np_tour_length(current_route)
+    #         n = self.__size
+    #         if n is None or self.__distances is None:
+    #             raise ValueError("Size or distances are not initialized.")
+    #         # 2. CACHE INITIAL LENGTH: Calculate the full tour length only once at the start.
+    #         current_tour_length = self._np_tour_length(current_route)
             
-            improved = True
-            bound = 0
-            max_iteration = 1000
-            while improved and bound < max_iteration:
-                improved = False
-                # Iterate over all distinct pairs of edges
-                for i in range(n - 1):
-                    for j in range(i + 2, n):
-                        # Define the nodes involved in the potential swap
-                        # Edge 1: (c_i -> c_i_plus_1)
-                        # Edge 2: (c_j -> c_j_plus_1)
-                        c_i = current_route[i]
-                        c_i_plus_1 = current_route[i+1]
-                        c_j = current_route[j]
-                        # Handle the wrap-around case for the last edge of the tour
-                        c_j_plus_1 = current_route[(j + 1) % n]
-                        # 3. DELTA CALCULATION (O(1) operation)
-                        # Cost of edges to be removed
-                        len_removed = self.__distances[c_i, c_i_plus_1] + self.__distances[c_j, c_j_plus_1]
-                        # Cost of edges to be added
-                        len_added = self.__distances[c_i, c_j] + self.__distances[c_i_plus_1, c_j_plus_1]
-                        # Calculate the change in tour length
-                        delta = len_added - len_removed
+    #         improved = True
+    #         bound = 0
+    #         max_iteration = 1000
+    #         while improved and bound < max_iteration:
+    #             improved = False
+    #             # Iterate over all distinct pairs of edges
+    #             for i in range(n - 1):
+    #                 for j in range(i + 2, n):
+    #                     # Define the nodes involved in the potential swap
+    #                     # Edge 1: (c_i -> c_i_plus_1)
+    #                     # Edge 2: (c_j -> c_j_plus_1)
+    #                     c_i = current_route[i]
+    #                     c_i_plus_1 = current_route[i+1]
+    #                     c_j = current_route[j]
+    #                     # Handle the wrap-around case for the last edge of the tour
+    #                     c_j_plus_1 = current_route[(j + 1) % n]
+    #                     # 3. DELTA CALCULATION (O(1) operation)
+    #                     # Cost of edges to be removed
+    #                     len_removed = self.__distances[c_i, c_i_plus_1] + self.__distances[c_j, c_j_plus_1]
+    #                     # Cost of edges to be added
+    #                     len_added = self.__distances[c_i, c_j] + self.__distances[c_i_plus_1, c_j_plus_1]
+    #                     # Calculate the change in tour length
+    #                     delta = len_added - len_removed
                         
-                        if delta < 0:
-                            # 4. APPLY THE CHANGE: Reverse the segment from i+1 to j
-                            current_route[i+1 : j+1] = np.flip(current_route[i+1 : j+1])
+    #                     if delta < 0:
+    #                         # 4. APPLY THE CHANGE: Reverse the segment from i+1 to j
+    #                         current_route[i+1 : j+1] = np.flip(current_route[i+1 : j+1])
                             
-                            # 5. UPDATE CACHED LENGTH: Update the length using the delta
-                            current_tour_length += delta
+    #                         # 5. UPDATE CACHED LENGTH: Update the length using the delta
+    #                         current_tour_length += delta
                             
-                            improved = True
-                            break
-                    if improved:
-                        break
+    #                         improved = True
+    #                         break
+    #                 if improved:
+    #                     break
                     
-                bound += 1
-            return current_route
-        except Exception as e:
-            logging.exception(e)
-            # Always return a valid np.ndarray, even on exception
-            if self.__permutation is not None:
-                return np.copy(self.__permutation)
-            else:
-                return np.array([])
+    #             bound += 1
+    #         return current_route, int(current_tour_length)
+    #     except Exception as e:
+    #         logging.exception(e)
+    #         if self.__permutation is not None:
+    #             return np.copy(self.__permutation), 0
+    #         else:
+    #             return np.array([]), -1
 
 
-
-
-    def __exchange(self) -> np.ndarray:
-        if self.__permutation is None:
-            raise ValueError("Permutation is not initialized.")
-        current_route = np.copy(self.__permutation)
-        n = self.__size
-        if n is None or self.__distances is None:
-            raise ValueError("Size or distances are not initialized.")
-        # Cache the initial tour length once before starting
-        current_tour_length = self._np_tour_length(current_route)
+    # def __exchange(self) -> tuple[np.ndarray, int]:
+    #     if self.__permutation is None:
+    #         raise ValueError("Permutation is not initialized.")
+    #     current_route = np.copy(self.__permutation)
+    #     n = self.__size
+    #     if n is None or self.__distances is None:
+    #         raise ValueError("Size or distances are not initialized.")
+    #     # Cache the initial tour length once before starting
+    #     current_tour_length = self._np_tour_length(current_route)
         
-        improved = True
-        bound = 0 
-        max_iterations = 1000
-        while improved and bound < max_iterations:
-            improved = False
-            # Use more efficient loops to check each pair (i, j) once
-            for i in range(n):
-                for j in range(i + 1, n):
+    #     improved = True
+    #     bound = 0 
+    #     max_iterations = 1000
+    #     while improved and bound < max_iterations:
+    #         improved = False
+    #         # Use more efficient loops to check each pair (i, j) once
+    #         for i in range(n):
+    #             for j in range(i + 1, n):
                     
-                    c_i = current_route[i]
-                    c_j = current_route[j]
+    #                 c_i = current_route[i]
+    #                 c_j = current_route[j]
                     
-                    # Get neighboring cities, using modulo to handle tour ends
-                    c_i_prev = current_route[(i - 1 + n) % n]
-                    c_i_next = current_route[(i + 1) % n]
+    #                 # Get neighboring cities, using modulo to handle tour ends
+    #                 c_i_prev = current_route[(i - 1 + n) % n]
+    #                 c_i_next = current_route[(i + 1) % n]
                     
-                    # Check if the swap is for adjacent cities
-                    if j == i + 1:
-                        # Adjacent case: ... c_i_prev -> c_i -> c_j -> c_i_next (which is c_j_next)...
-                        len_removed = self.__distances[c_i_prev, c_i] + self.__distances[c_j, c_i_next]
-                        len_added = self.__distances[c_i_prev, c_j] + self.__distances[c_i, c_i_next]
-                        delta = len_added - len_removed
-                    else:
-                        # Non-adjacent case
-                        c_j_prev = current_route[(j - 1 + n) % n]
-                        c_j_next = current_route[(j + 1) % n]
+    #                 # Check if the swap is for adjacent cities
+    #                 if j == i + 1:
+    #                     # Adjacent case: ... c_i_prev -> c_i -> c_j -> c_i_next (which is c_j_next)...
+    #                     len_removed = self.__distances[c_i_prev, c_i] + self.__distances[c_j, c_i_next]
+    #                     len_added = self.__distances[c_i_prev, c_j] + self.__distances[c_i, c_i_next]
+    #                     delta = len_added - len_removed
+    #                 else:
+    #                     # Non-adjacent case
+    #                     c_j_prev = current_route[(j - 1 + n) % n]
+    #                     c_j_next = current_route[(j + 1) % n]
                         
-                        len_removed = (self.__distances[c_i_prev, c_i] + self.__distances[c_i, c_i_next] +
-                                    self.__distances[c_j_prev, c_j] + self.__distances[c_j, c_j_next])
+    #                     len_removed = (self.__distances[c_i_prev, c_i] + self.__distances[c_i, c_i_next] +
+    #                                 self.__distances[c_j_prev, c_j] + self.__distances[c_j, c_j_next])
                         
-                        len_added = (self.__distances[c_i_prev, c_j] + self.__distances[c_j, c_i_next] +
-                                    self.__distances[c_j_prev, c_i] + self.__distances[c_i, c_j_next])
+    #                     len_added = (self.__distances[c_i_prev, c_j] + self.__distances[c_j, c_i_next] +
+    #                                 self.__distances[c_j_prev, c_i] + self.__distances[c_i, c_j_next])
                         
-                        delta = len_added - len_removed
-                    if delta < 0:
-                        # Improvement found, apply the swap
-                        current_route[i], current_route[j] = current_route[j], current_route[i]
-                        print(f"Found improvement!")
-                        # Update the cached tour length with the delta
-                        current_tour_length += delta
-                        improved = True
+    #                     delta = len_added - len_removed
+    #                 if delta < 0:
+    #                     # Improvement found, apply the swap
+    #                     current_route[i], current_route[j] = current_route[j], current_route[i]
+    #                     print(f"Found improvement!")
+    #                     # Update the cached tour length with the delta
+    #                     current_tour_length += delta
+    #                     improved = True
                         
-                        # Restart search from the new, improved route
-                        break
-                if improved:
-                    break
-            bound += 1
+    #                     # Restart search from the new, improved route
+    #                     break
+    #             if improved:
+    #                 break
+    #         bound += 1
         
-        return current_route
+    #     return current_route, int(current_tour_length)
 
 
 
