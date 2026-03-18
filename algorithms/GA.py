@@ -117,8 +117,12 @@ class DesignedGA():
                 population[i], _ = FastLocalSearch.jump(instance, population[i])
         elif self.local_search_opt == "two_opt":
             for i in range(len(population)):
-                # Note: Ensure TSPlib.py has method name 'twoOpt' or 'two_opt' matching this
                 population[i], _ = FastLocalSearch.twoOpt(instance, population[i])
+        elif self.local_search_opt == "exchange":
+            for i in range(len(population)):
+                population[i], _ = FastLocalSearch.exchange(instance, population[i])
+        else:
+            raise ValueError("The provided local search operator has to strictly be one of the following: `jump`, `two_opt`, or `exchange`.")
 
 
     def run(self, instance: TSPInstance) -> AlgorithmResult:
